@@ -1,0 +1,49 @@
+Here is some crappy documentation on how to use this application!
+
+
+What is nosebus?
+
+Nosebus is an application that will get arrival estimates for vehicles in the SF MUNI public transit system.
+
+How does it work?
+
+It uses the NextBus Google Maps XML feed.  As per the terms of this feed, the data cannot be used for commercial purposes.
+
+What are the system requirements?
+It requires glib, libcurl, and a few ANSI/POSIX stuff.  If your existing system doesn't already have these libraries, it's fucked.  My fucking phone has them all by default.
+Beyond those libraries, it's OS independent.
+
+What resources does it use?
+It needs to connect out over port 80.  We're talking anywhere from <1KB to 12KB  per run on average.
+If you need it to support a proxy, run it with the environmental variable http_proxy set.  For instance:
+http_proxy="1.2.3.4:8080" ./nosebus
+
+It also attempts to cache a keyfile in "/tmp/nosebusKey".  This keyfile can be used by multiple instances simultaneously.  If it can use this keyfile, it won't need to get a key on each run -- this saves around 8KB per run, and the latency of an extra page download.
+If this file can't be accessed, or the key in it is corrupt or expired, it will silently download a new key.
+
+How do I compile it?
+Run "make".
+
+How do I run it?
+
+You execute the program with three switches to provide the line, destination and stop you wish to query data for.  An example is:
+nosebus -l 38 -d 38_IB3 -s 4283
+Which corresponds to Geary Blvd & 39th Ave on the 38 Inbound.
+
+Where the fuck do I get the destination and stop numbers?
+Easy:
+http://www.nextbus.com/wireless/miniRoute.shtml?a=sf-muni
+Find a stop on that site. Take a look in the URL:
+http://www.nextbus.com/wireless/miniPrediction.shtml?a=sf-muni&r=38&d=38_IB3&s=4283
+r=line (route), d=destination, s=stop.
+
+How can I get the output data formatted differently?
+
+You can modify the code yourself -- there's a function called nb_printArrivals() in nosebus.c.  It's a simple printf() statement.
+
+Here again are some examples:
+14 Inbound Mission St & 18th St
+./nosebus -l 14 -d 14_IB1 -s 5553
+
+49 Inbound Mission St & 18th St
+./nosebus -l 49 -d 49_IB2 -s 5553
