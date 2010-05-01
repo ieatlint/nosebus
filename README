@@ -41,9 +41,18 @@ How can I get the output data formatted differently?
 
 You can modify the code yourself -- there's a function called nb_printArrivals() in nosebus.c.  It's a simple printf() statement.
 
+Does it work on systems other than MUNI?
+
+Yes.  As of version 1.1.0, all NextBus agencies are supported.  For a complete list, see:
+http://www.nextbus.com/wireless/miniRegion.shtml
+A command line switch has been added, "-a", to specify which agency to search.  If you fail to specify this switch, it will default to MUNI.
+
 Here again are some examples:
 14 Inbound Mission St & 18th St
 ./nosebus -l 14 -d 14_IB1 -s 5553
 
 49 Inbound Mission St & 18th St
 ./nosebus -l 49 -d 49_IB2 -s 5553
+
+AC Transit Line 26 to Lake Merrit BART at 40th St & Telegraph Av
+./nosebus -a actransit -l 26 -d 26_12_0 -s 1002650

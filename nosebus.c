@@ -23,12 +23,13 @@
 #include "web.h"
 #include "predict.h"
 
-#define VERSION "1.0.0"
+#define VERSION "1.1.0"
 
 #define MAX_RETRIES 3
 #define TMP_KEYFILE "/tmp/nosebusKey"
 #define KEY_BUF_SIZE 8192
 #define NB_KEY_URL "http://www.nextbus.com/googleMap/googleMap.jsp?a=sf-muni&r=F&d=F__IBCTRO&s=5650"
+#define DEFAULT_AGENCY "sf-muni"
 
 int main( int argc, char **argv ) {
 	nbData *nb = NULL;
@@ -201,7 +202,8 @@ gboolean nb_getKey( nbData *nb, gboolean usecache ) {
  * to receive valid input at execution */
 void nb_help() {
 	printf( "Nosebus version " VERSION "\n"
-		"nosebus -l [line] -d [dest] -s [stop]\n"
+		"nosebus [-a <agency>] -l <line> -d <dest> -s <stop>\n"
+		"-a <agency>\tSpecify the transit agency (defaults to sf-muni)\n"
 		"-l <line>\tSpecify the transit line.\n"
 		"-d <dest>\tSpecify the destination of the line\n"
 		"-s <stop>\tSpecify the stop for the line\n" );
@@ -225,7 +227,23 @@ nbQuery *nb_cmdParse( int argc, char **argv ) {
 			return NULL;
 		}
 
+		/* this switch should be replaced such that it doesn't repeat code 4 times.. */
 		switch( argv[i][1] ) {
+			case 'a':
+				if( nbq->agency ) {
+					g_free( nbq->agency );
+					nbq->agency = NULL;
+				}
+				if( argv[i][2] != '\0' )
+					nbq->agency = g_strdup( argv[i]+2 );
+				else if( i+1 < argc )
+					nbq->agency = g_strdup( argv[++i] );
+				else {
+					fprintf( stderr, "No data provided for -a switch as required.\n" );
+					nb_freeQuery( nbq );
+					return NULL;
+				}
+				break;
 			case 'l':
 				if( nbq->line ) {
 					g_free( nbq->line );
@@ -283,6 +301,11 @@ nbQuery *nb_cmdParse( int argc, char **argv ) {
 		fprintf( stderr, "Failed to specify all required values.\nYou must specify a line, destination and stop!\n" );
 		nb_freeQuery( nbq );
 		return NULL;
+	} else if( !nbq->agency ) {
+		/* this is done to make the -a switch optional, so that existing scripts
+		 * which use this program will continue to work.
+		 * The default agency is sf-muni */
+		nbq->agency = g_strdup( DEFAULT_AGENCY );
 	}
 
 	return nbq;
@@ -291,6 +314,8 @@ nbQuery *nb_cmdParse( int argc, char **argv ) {
 /* This function frees all dynamically allocated data from a nbQuery type. */
 nbQuery *nb_freeQuery( nbQuery *nbq ) {
 	if( nbq != NULL ) {
+		if( nbq->agency != NULL )
+			g_free( nbq->agency );
 		if( nbq->line != NULL )
 			g_free( nbq->line );
 		if( nbq->dest != NULL )

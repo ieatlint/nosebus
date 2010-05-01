@@ -24,11 +24,6 @@
 #include "web.h"
 #include "predict.h"
 
-/*
-curl -e "http://www.nextbus.com/service/googleMapXMLFeed" "http://www.nextbus.com/service/googleMapXMLFeed?command=predictionsForMultiStops&a=sf-muni&stops=F|F__OBCTRO|5676&key=120780473219"
-*/
-
-
 gint predict_get( nbData *nb ) {
 	GMarkupParseContext *xmldata = NULL;
 	GMarkupParser xmlparser = {	xml_cb_predict_start,//start
@@ -42,7 +37,7 @@ gint predict_get( nbData *nb ) {
 	struct xml_data parsed = {0};
 	gchar url[256];
 
-	sprintf(url, MPRED_URL, nb->query->line, nb->query->dest, nb->query->stop, nb->key );
+	sprintf(url, MPRED_URL, nb->query->agency, nb->query->line, nb->query->dest, nb->query->stop, nb->key );
 
 	if (web_get( nb->web, url, body, &len ) ) {
 		fprintf(stderr,"Failed to download XML data\n");

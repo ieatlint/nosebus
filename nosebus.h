@@ -23,6 +23,7 @@ typedef struct {
 } nbArrival;
 
 typedef struct {
+	gchar *agency;
 	gchar *line;
 	gchar *dest;
 	gchar *stop;

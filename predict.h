@@ -19,7 +19,7 @@
 #define PREDICT_H
 
 #define BASE_URL "http://www.nextbus.com/service/googleMapXMLFeed?command=predictionsForMultiStops&a=sf-muni&"
-#define MPRED_URL "http://www.nextbus.com/service/googleMapXMLFeed?command=predictionsForMultiStops&a=sf-muni&stops=%s|%s|%s&key=%s"
+#define MPRED_URL "http://www.nextbus.com/service/googleMapXMLFeed?command=predictionsForMultiStops&a=%s&stops=%s|%s|%s&key=%s"
 
 #define KEY "120780473219"
 #define BUF_SIZE 4096
